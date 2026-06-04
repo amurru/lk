@@ -27,6 +27,7 @@ func DefaultRegistry() Registry {
 		{Name: "images", Aliases: []string{"image", "pics", "photo", "photos"}, Extensions: []string{"jpg", "jpeg", "png", "gif", "svg", "webp", "bmp", "tif", "tiff"}, MIMEs: []string{"image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/webp", "image/bmp", "image/tiff"}},
 		{Name: "videos", Aliases: []string{"vid", "vids", "movie", "movies"}, Extensions: []string{"mp4", "avi", "mkv", "mov", "webm", "m4v", "mpeg", "mpg"}, MIMEs: []string{"video/mp4", "video/x-matroska", "video/webm", "video/quicktime"}},
 		{Name: "archives", Aliases: []string{"archive", "zips"}, Extensions: []string{"zip", "tar", "gz", "rar", "7z", "tgz", "bz2"}, MIMEs: []string{"application/zip", "application/x-tar", "application/x-rar-compressed", "application/gzip", "application/x-7z-compressed"}},
+		{Name: "audio", Aliases: []string{"sound", "music"}, Extensions: []string{"aac", "ac3", "aif", "aiff", "amr", "au", "flac", "m4a", "mid", "midi", "mka", "mp3", "mpc", "ogg", "opus", "wav", "wma", "wv"}, MIMEs: []string{"audio/mpeg", "audio/wav", "audio/x-wav", "audio/ogg", "audio/flac", "audio/mp4", "audio/aac", "audio/x-ms-wma", "audio/opus", "audio/aiff", "audio/x-aiff", "audio/basic", "audio/webm", "audio/ac3", "audio/amr", "audio/midi"}},
 		{Name: "code", Aliases: []string{"src", "source", "script"}, Extensions: []string{"go", "py", "js", "sh", "html", "css", "ts", "tsx", "json", "yaml", "yml", "rb", "java", "c", "h", "cpp", "hpp"}, MIMEs: []string{"text/x-go", "text/x-python", "text/javascript", "application/javascript", "text/html", "text/css", "application/json", "application/x-yaml", "text/x-shellscript", "application/xml"}},
 	}
 	return NewRegistry(kinds)
@@ -107,6 +108,15 @@ func (r Registry) KindForMIME(mime string) (string, bool) {
 	}
 	if strings.HasPrefix(mime, "text/") {
 		return "documents", true
+	}
+	if strings.HasPrefix(mime, "audio/") {
+		return "audio", true
+	}
+	if strings.HasPrefix(mime, "video/") {
+		return "videos", true
+	}
+	if strings.HasPrefix(mime, "image/") {
+		return "images", true
 	}
 	return "", false
 }
