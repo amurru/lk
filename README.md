@@ -17,7 +17,7 @@ If no path is given, the current directory is used.
 |-----------|----------------------|------------------------------------------------|
 | archives  | archive, zips        | 7z, bz2, gz, rar, tar, tgz, zip               |
 | code      | script, source, src  | c, cpp, css, go, h, hpp, html, java, js, json, py, rb, sh, ts, tsx, yaml, yml |
-| documents | doc, docs            | csv, doc, docx, epub, log, md, pdf, rtf, txt   |
+| documents | doc, docs            | csv, doc, docm, docx, dot, dotm, dotx, epub, log, md, odp, ods, odt, pdf, pot, potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, rtf, txt, xls, xlsb, xlsm, xlsx, xlt, xltm, xltx, xps |
 | images    | image, photo, pics   | bmp, gif, jpeg, jpg, png, svg, tif, tiff, webp |
 | videos    | movie, vid, vids     | avi, m4v, mkv, mov, mp4, mpeg, mpg, webm       |
 
