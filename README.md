@@ -1,30 +1,53 @@
-# LK - List Kind
+# lk — List Kind
 
-List files by their kind (e.g. documents, images, videos, ...etc).
+A fast, zero-config file lister that groups files by kind instead of making you remember extensions. Find all images, documents, videos, code, or archives in a directory with a single command. Supports magic-byte detection for more accurate classification, multiple output formats, and configurable sorting.
 
 ## Usage
 
-```text
+```
 lk <kind> [flags] [path]
 lk kinds
 ```
 
+If no path is given, the current directory is used.
+
+### Kinds
+
+| Kind      | Aliases              | Extensions                                     |
+|-----------|----------------------|------------------------------------------------|
+| archives  | archive, zips        | 7z, bz2, gz, rar, tar, tgz, zip               |
+| code      | script, source, src  | c, cpp, css, go, h, hpp, html, java, js, json, py, rb, sh, ts, tsx, yaml, yml |
+| documents | doc, docs            | csv, doc, docx, epub, log, md, pdf, rtf, txt   |
+| images    | image, photo, pics   | bmp, gif, jpeg, jpg, png, svg, tif, tiff, webp |
+| videos    | movie, vid, vids     | avi, m4v, mkv, mov, mp4, mpeg, mpg, webm       |
+
+### Flags
+
+| Flag          | Short | Description                       |
+|---------------|-------|-----------------------------------|
+| `--recursive` | `-r`  | walk subdirectories recursively   |
+| `--hidden`    | `-a`  | include hidden files              |
+| `--format`    | `-f`  | output format: `table` (default), `simple`, `json`, `xml` |
+| `--sort`      | `-s`  | sort by: `name` (default), `size`, `modified` |
+| `--limit`     | `-l`  | limit number of results           |
+| `--no-magic`  |       | disable magic-byte inspection     |
+| `--kinds`     | `-k`  | list kinds and exit               |
+
 ### Examples
 
-```text
+```sh
 lk documents
 lk images /path/to/files
-lk videos --recursive --hidden /path/to/files
-lk documents --format json /path/to/files
+lk videos -ra /path/to/files
+lk documents -f json /path/to/files
+lk code -f xml -r /path/to/files
+lk documents -s size -l 10
 lk documents --no-magic /path/to/files
 lk kinds
 ```
 
-### Flags
+## Install
 
-- `-r`, `--recursive`: walk subdirectories recursively
-- `-a`, `--hidden`: include hidden files
-- `-f`, `--format`: `table`, `simple`, or `json`
-- `-s`, `--sort`: `name`, `size`, or `modified`
-- `-n`, `--limit`: limit the number of results
-- `--no-magic`: disable magic-byte inspection
+```sh
+go build -o lk ./cmd/lk/
+```
