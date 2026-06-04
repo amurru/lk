@@ -41,6 +41,8 @@ type ScanOptions struct {
 	Recursive     bool
 	IncludeHidden bool
 	UseMagic      bool
+	Null          bool
+	ExecCmd       []string
 	SortBy        SortBy
 	Limit         int
 }

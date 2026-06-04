@@ -34,3 +34,34 @@ func TestWriteTableEmptyMessage(t *testing.T) {
 		t.Fatalf("unexpected table output: %q", buf.String())
 	}
 }
+
+func TestWriteNullSeparatesByNullByte(t *testing.T) {
+	var buf bytes.Buffer
+	entries := []domain.FileEntry{
+		{Path: "a.txt", Name: "a.txt", Kind: "documents", MatchedBy: domain.MatchSourceExtension},
+		{Path: "b.txt", Name: "b.txt", Kind: "documents", MatchedBy: domain.MatchSourceExtension},
+	}
+	if err := writeNull(&buf, entries); err != nil {
+		t.Fatal(err)
+	}
+	output := buf.String()
+	if !strings.Contains(output, "a.txt\x00") {
+		t.Fatalf("expected a.txt followed by null byte, got %q", output)
+	}
+	if !strings.Contains(output, "b.txt\x00") {
+		t.Fatalf("expected b.txt followed by null byte, got %q", output)
+	}
+	if strings.Contains(output, "\n") {
+		t.Fatalf("expected no newlines in null output, got %q", output)
+	}
+}
+
+func TestWriteNullEmpty(t *testing.T) {
+	var buf bytes.Buffer
+	if err := writeNull(&buf, nil); err != nil {
+		t.Fatal(err)
+	}
+	if buf.Len() != 0 {
+		t.Fatalf("expected empty output, got %q", buf.String())
+	}
+}

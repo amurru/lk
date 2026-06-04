@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/amurru/lk/internal/domain"
@@ -59,6 +60,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	sortBy := fs.String("sort", "name", "sort by name, size, or modified")
 	limit := fs.Int("limit", 0, "limit results")
 	fs.IntVar(limit, "l", 0, "limit results")
+	nullFlag := fs.Bool("null", false, "null-terminate output")
 	noMagic := fs.Bool("no-magic", false, "disable magic byte inspection")
 	help := fs.Bool("help", false, "show help")
 	fs.BoolVar(help, "h", false, "show help")
@@ -66,6 +68,25 @@ func run(args []string, stdout, stderr io.Writer) int {
 	fs.BoolVar(versionFlag, "v", false, "show version")
 	kindsFlag := fs.Bool("kinds", false, "list kinds")
 	fs.BoolVar(kindsFlag, "k", false, "list kinds")
+
+	var execCmd []string
+	for i, arg := range args[1:] {
+		if arg == "--exec" && i+1 < len(args[1:]) {
+			execCmd = args[1:][i+1:]
+			args = args[:i+1]
+			break
+		}
+	}
+
+	// Normalize -0 to --null (Go's flag package doesn't support digit-only flags)
+	normalized := make([]string, len(args))
+	copy(normalized, args)
+	for i, arg := range normalized {
+		if arg == "-0" {
+			normalized[i] = "--null"
+		}
+	}
+	args = normalized
 
 	if err := fs.Parse(args[1:]); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -128,15 +149,50 @@ func run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, walkErr)
 	}
 
+	// --exec mode: run command per file, suppress normal output
+	if len(execCmd) > 0 {
+		if len(filtered) == 0 {
+			return 1
+		}
+		hadFailure := false
+		for _, entry := range filtered {
+			args := substitutePath(execCmd, entry.Path)
+			cmd := exec.Command(args[0], args[1:]...)
+			cmd.Stdout = stdout
+			cmd.Stderr = stderr
+			if err := cmd.Run(); err != nil {
+				fmt.Fprintf(stderr, "lk: %s: %v\n", entry.Path, err)
+				hadFailure = true
+			}
+		}
+		if hadFailure {
+			return 1
+		}
+		return 0
+	}
+
+	// Normal output
 	writer := output.Writer{Stdout: stdout, Stderr: stderr}
-	if err := writer.Write(filtered, kindName, outputFormat); err != nil {
+	if err := writer.Write(filtered, kindName, outputFormat, *nullFlag); err != nil {
 		fmt.Fprintln(stderr, err)
+		return 1
+	}
+
+	if len(filtered) == 0 {
 		return 1
 	}
 	if len(walkErrs) > 0 {
 		return 1
 	}
 	return 0
+}
+
+func substitutePath(cmd []string, path string) []string {
+	out := make([]string, len(cmd))
+	for i, arg := range cmd {
+		out[i] = strings.ReplaceAll(arg, "{}", path)
+	}
+	return out
 }
 
 func parseFormat(raw string) (domain.OutputFormat, error) {
@@ -203,6 +259,8 @@ func printUsage(w io.Writer) {
 	fmt.Fprintln(w, "  -f, --format      table, simple, json, or xml")
 	fmt.Fprintln(w, "  -s, --sort        name, size, or modified")
 	fmt.Fprintln(w, "  -l, --limit       limit number of results")
+	fmt.Fprintln(w, "  -0, --null        null-terminate output (for xargs)")
+	fmt.Fprintln(w, "      --exec CMD {} run command per file ({} = path)")
 	fmt.Fprintln(w, "      --no-magic    disable magic byte inspection")
 	fmt.Fprintln(w, "  -k, --kinds       list kinds and exit")
 	fmt.Fprintln(w, "  -h, --help       show help")

@@ -15,11 +15,17 @@ type Writer struct {
 	Stderr io.Writer
 }
 
-func (w Writer) Write(entries []domain.FileEntry, kind string, format domain.OutputFormat) error {
+func (w Writer) Write(entries []domain.FileEntry, kind string, format domain.OutputFormat, null bool) error {
 	switch format {
 	case "", domain.OutputFormatTable:
+		if null {
+			return writeNull(w.Stdout, entries)
+		}
 		return writeTable(w.Stdout, entries, kind)
 	case domain.OutputFormatSimple:
+		if null {
+			return writeNull(w.Stdout, entries)
+		}
 		return writeSimple(w.Stdout, entries)
 	case domain.OutputFormatJSON:
 		return writeJSON(w.Stdout, entries)

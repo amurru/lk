@@ -59,6 +59,12 @@ func (c Classifier) Classify(path string) (Classification, error) {
 	if strings.EqualFold(mime, "text/plain") || strings.HasPrefix(strings.ToLower(mime), "text/") {
 		return Classification{Kind: "documents", MatchedBy: domain.MatchSourceMagic, Extension: ext, DetectedMIME: mime}, nil
 	}
+
+	// Fallback: check for formats whose signatures are beyond the 512-byte header.
+	if detectISO9660(path) {
+		return Classification{Kind: "diskimages", MatchedBy: domain.MatchSourceMagic, Extension: ext, DetectedMIME: "application/x-iso9660-image"}, nil
+	}
+
 	return Classification{Kind: "unknown", MatchedBy: domain.MatchSourceUnknown, Extension: ext, DetectedMIME: mime}, nil
 }
 

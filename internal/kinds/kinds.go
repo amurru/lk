@@ -29,6 +29,11 @@ func DefaultRegistry() Registry {
 		{Name: "archives", Aliases: []string{"archive", "zips"}, Extensions: []string{"zip", "tar", "gz", "rar", "7z", "tgz", "bz2"}, MIMEs: []string{"application/zip", "application/x-tar", "application/x-rar-compressed", "application/gzip", "application/x-7z-compressed"}},
 		{Name: "audio", Aliases: []string{"sound", "music"}, Extensions: []string{"aac", "ac3", "aif", "aiff", "amr", "au", "flac", "m4a", "mid", "midi", "mka", "mp3", "mpc", "ogg", "opus", "wav", "wma", "wv"}, MIMEs: []string{"audio/mpeg", "audio/wav", "audio/x-wav", "audio/ogg", "audio/flac", "audio/mp4", "audio/aac", "audio/x-ms-wma", "audio/opus", "audio/aiff", "audio/x-aiff", "audio/basic", "audio/webm", "audio/ac3", "audio/amr", "audio/midi"}},
 		{Name: "code", Aliases: []string{"src", "source", "script"}, Extensions: []string{"go", "py", "js", "sh", "html", "css", "ts", "tsx", "json", "yaml", "yml", "rb", "java", "c", "h", "cpp", "hpp"}, MIMEs: []string{"text/x-go", "text/x-python", "text/javascript", "application/javascript", "text/html", "text/css", "application/json", "application/x-yaml", "text/x-shellscript", "application/xml"}},
+		{Name: "databases", Aliases: []string{"data", "db"}, Extensions: []string{"accdb", "db", "dbf", "mdb", "sqlite", "sqlite3"}, MIMEs: []string{"application/vnd.sqlite3", "application/x-sqlite3", "application/x-msaccess"}},
+		{Name: "diskimages", Aliases: []string{"disk", "img", "iso"}, Extensions: []string{"dmg", "img", "iso", "vhd", "vmdk", "wim"}, MIMEs: []string{"application/x-iso9660-image", "application/x-apple-diskimage"}},
+		{Name: "executables", Aliases: []string{"bin", "binary", "exe"}, Extensions: []string{"bat", "cmd", "com", "dll", "dylib", "exe", "ps1", "so"}, MIMEs: []string{"application/x-executable", "application/x-dosexec", "application/x-elf", "application/x-mach-binary", "application/x-sharedlib"}},
+		{Name: "fonts", Aliases: []string{"font", "typefaces"}, Extensions: []string{"eot", "otf", "ttf", "woff", "woff2"}, MIMEs: []string{"font/ttf", "font/otf", "font/woff", "font/woff2", "application/vnd.ms-fontobject"}},
+		{Name: "models", Aliases: []string{"3d", "cad"}, Extensions: []string{"3ds", "blend", "dae", "fbx", "glb", "gltf", "obj", "ply", "stl", "u3d"}, MIMEs: []string{"model/gltf-binary", "model/gltf+json", "model/obj", "model/stl"}},
 	}
 	return NewRegistry(kinds)
 }
