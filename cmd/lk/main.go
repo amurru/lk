@@ -147,6 +147,8 @@ func parseFormat(raw string) (domain.OutputFormat, error) {
 		return domain.OutputFormatSimple, nil
 	case "json":
 		return domain.OutputFormatJSON, nil
+	case "xml":
+		return domain.OutputFormatXML, nil
 	default:
 		return "", fmt.Errorf("unknown format %q", raw)
 	}
@@ -198,7 +200,7 @@ func printUsage(w io.Writer) {
 	fmt.Fprintln(w, "Flags:")
 	fmt.Fprintln(w, "  -r, --recursive   walk subdirectories recursively")
 	fmt.Fprintln(w, "  -a, --hidden      include hidden files")
-	fmt.Fprintln(w, "  -f, --format      table, simple, or json")
+	fmt.Fprintln(w, "  -f, --format      table, simple, json, or xml")
 	fmt.Fprintln(w, "  -s, --sort        name, size, or modified")
 	fmt.Fprintln(w, "  -l, --limit       limit number of results")
 	fmt.Fprintln(w, "      --no-magic    disable magic byte inspection")

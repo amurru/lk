@@ -24,6 +24,7 @@ const (
 	OutputFormatTable  OutputFormat = "table"
 	OutputFormatSimple OutputFormat = "simple"
 	OutputFormatJSON   OutputFormat = "json"
+	OutputFormatXML   OutputFormat = "xml"
 )
 
 type FileEntry struct {

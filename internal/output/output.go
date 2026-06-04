@@ -2,6 +2,7 @@ package output
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"time"
@@ -22,6 +23,8 @@ func (w Writer) Write(entries []domain.FileEntry, kind string, format domain.Out
 		return writeSimple(w.Stdout, entries)
 	case domain.OutputFormatJSON:
 		return writeJSON(w.Stdout, entries)
+	case domain.OutputFormatXML:
+		return writeXML(w.Stdout, entries)
 	default:
 		return fmt.Errorf("unknown format %q", format)
 	}
@@ -36,6 +39,44 @@ func writeJSON(w io.Writer, entries []domain.FileEntry) error {
 		return err
 	}
 	_, err = fmt.Fprintln(w, string(data))
+	return err
+}
+
+func writeXML(w io.Writer, entries []domain.FileEntry) error {
+	if entries == nil {
+		entries = []domain.FileEntry{}
+	}
+	type xmlEntry struct {
+		XMLName   xml.Name `xml:"file"`
+		Path      string   `xml:"path"`
+		Name      string   `xml:"name"`
+		Extension string   `xml:"extension,omitempty"`
+		SizeBytes int64    `xml:"sizeBytes"`
+		Modified  string   `xml:"modifiedAt"`
+		Kind      string   `xml:"kind"`
+		MatchedBy string   `xml:"matchedBy"`
+	}
+	type xmlRoot struct {
+		XMLName xml.Name   `xml:"files"`
+		Entries []xmlEntry `xml:"file"`
+	}
+	xentries := make([]xmlEntry, len(entries))
+	for i, e := range entries {
+		xentries[i] = xmlEntry{
+			Path:      e.Path,
+			Name:      e.Name,
+			Extension: e.Extension,
+			SizeBytes: e.SizeBytes,
+			Modified:  e.ModifiedAt.UTC().Format(time.RFC3339),
+			Kind:      e.Kind,
+			MatchedBy: string(e.MatchedBy),
+		}
+	}
+	data, err := xml.MarshalIndent(xmlRoot{Entries: xentries}, "", "  ")
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprintln(w, xml.Header+string(data))
 	return err
 }
 
