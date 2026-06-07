@@ -58,6 +58,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	format := fs.String("format", "table", "output format")
 	fs.StringVar(format, "f", "table", "output format")
 	sortBy := fs.String("sort", "name", "sort by name, size, or modified")
+	fs.StringVar(sortBy, "s", "name", "sort by name, size, or modified")
 	limit := fs.Int("limit", 0, "limit results")
 	fs.IntVar(limit, "l", 0, "limit results")
 	nullFlag := fs.Bool("null", false, "null-terminate output")
@@ -218,6 +219,8 @@ func parseSort(raw string) (domain.SortBy, error) {
 		return domain.SortBySize, nil
 	case "modified", "modtime":
 		return domain.SortByModified, nil
+	case "shuffle":
+		return domain.SortByShuffle, nil
 	default:
 		return "", fmt.Errorf("unknown sort order %q", raw)
 	}
@@ -257,7 +260,7 @@ func printUsage(w io.Writer) {
 	fmt.Fprintln(w, "  -r, --recursive   walk subdirectories recursively")
 	fmt.Fprintln(w, "  -a, --hidden      include hidden files")
 	fmt.Fprintln(w, "  -f, --format      table, simple, json, or xml")
-	fmt.Fprintln(w, "  -s, --sort        name, size, or modified")
+	fmt.Fprintln(w, "  -s, --sort        name, size, modified, or shuffle")
 	fmt.Fprintln(w, "  -l, --limit       limit number of results")
 	fmt.Fprintln(w, "  -0, --null        null-terminate output (for xargs)")
 	fmt.Fprintln(w, "      --exec CMD {} run command per file ({} = path)")

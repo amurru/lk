@@ -9,6 +9,66 @@ import (
 	"github.com/amurru/lk/internal/kinds"
 )
 
+func TestSortEntriesShuffle(t *testing.T) {
+	entries := []domain.FileEntry{
+		{Name: "a.txt", Path: "/a.txt"},
+		{Name: "b.txt", Path: "/b.txt"},
+		{Name: "c.txt", Path: "/c.txt"},
+		{Name: "d.txt", Path: "/d.txt"},
+		{Name: "e.txt", Path: "/e.txt"},
+	}
+
+	// Run shuffle multiple times and collect the resulting orders.
+	orders := make(map[string]bool)
+	for i := 0; i < 10; i++ {
+		shuffled := make([]domain.FileEntry, len(entries))
+		copy(shuffled, entries)
+		sortEntries(shuffled, domain.SortByShuffle)
+		key := ""
+		for _, e := range shuffled {
+			key += e.Name
+		}
+		orders[key] = true
+
+		// Verify it's a valid permutation — same names, just reordered.
+		names := make(map[string]int)
+		for _, e := range shuffled {
+			names[e.Name]++
+		}
+		for _, orig := range entries {
+			if names[orig.Name] != 1 {
+				t.Fatalf("shuffle produced invalid permutation: duplicate or missing %q", orig.Name)
+			}
+		}
+	}
+
+	// With 5 entries (120 permutations) and 10 shuffles, we expect at
+	// least 2 distinct orderings with overwhelming probability.
+	if len(orders) < 2 {
+		t.Fatalf("expected at least 2 distinct orderings over 10 shuffles, got %d", len(orders))
+	}
+}
+
+func TestSortEntriesShufflePreservesEntries(t *testing.T) {
+	entries := []domain.FileEntry{
+		{Name: "a.txt", Path: "/dir/a.txt", SizeBytes: 100},
+		{Name: "b.txt", Path: "/dir/b.txt", SizeBytes: 200},
+	}
+	sortEntries(entries, domain.SortByShuffle)
+
+	// After shuffle, both entries must still be present with all fields intact.
+	names := map[string]domain.FileEntry{}
+	for _, e := range entries {
+		names[e.Name] = e
+	}
+	if len(names) != 2 {
+		t.Fatalf("expected 2 entries after shuffle, got %d", len(names))
+	}
+	if names["a.txt"].SizeBytes != 100 || names["b.txt"].SizeBytes != 200 {
+		t.Fatal("shuffle corrupted entry fields")
+	}
+}
+
 func TestWalkIncludesRecursiveFilesAndSortsByName(t *testing.T) {
 	dir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(dir, "b.txt"), []byte("hello"), 0o600); err != nil {

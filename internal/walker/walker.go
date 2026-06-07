@@ -2,6 +2,7 @@ package walker
 
 import (
 	"io/fs"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"sort"
@@ -113,6 +114,10 @@ func sortEntries(entries []domain.FileEntry, sortBy domain.SortBy) {
 				return entries[i].Path < entries[j].Path
 			}
 			return entries[i].ModifiedAt.Before(entries[j].ModifiedAt)
+		})
+	case domain.SortByShuffle:
+		rand.Shuffle(len(entries), func(i, j int) {
+			entries[i], entries[j] = entries[j], entries[i]
 		})
 	}
 }

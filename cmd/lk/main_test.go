@@ -6,7 +6,29 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/amurru/lk/internal/domain"
 )
+
+func TestParseSortShuffle(t *testing.T) {
+	got, err := parseSort("shuffle")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got != domain.SortByShuffle {
+		t.Fatalf("expected SortByShuffle, got %q", got)
+	}
+}
+
+func TestParseSortShuffleCaseInsensitive(t *testing.T) {
+	got, err := parseSort("Shuffle")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got != domain.SortByShuffle {
+		t.Fatalf("expected SortByShuffle for 'Shuffle', got %q", got)
+	}
+}
 
 func TestRunListsKinds(t *testing.T) {
 	var out bytes.Buffer

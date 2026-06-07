@@ -34,7 +34,7 @@ If no path is given, the current directory is used.
 | `--recursive` | `-r`  | walk subdirectories recursively   |
 | `--hidden`    | `-a`  | include hidden files              |
 | `--format`    | `-f`  | output format: `table` (default), `simple`, `json`, `xml` |
-| `--sort`      | `-s`  | sort by: `name` (default), `size`, `modified` |
+| `--sort`      | `-s`  | sort by: `name` (default), `size`, `modified`, `shuffle` |
 | `--limit`     | `-l`  | limit number of results           |
 | `--null`      | `-0`  | null-terminate output (for xargs) |
 | `--exec`      |       | run command per file (`{}` = path)|

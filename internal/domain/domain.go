@@ -16,6 +16,7 @@ const (
 	SortByName     SortBy = "name"
 	SortBySize     SortBy = "size"
 	SortByModified SortBy = "modified"
+	SortByShuffle  SortBy = "shuffle"
 )
 
 type OutputFormat string
